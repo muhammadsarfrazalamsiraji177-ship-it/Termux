@@ -30,32 +30,29 @@ jobs:
         
     - name: Create Cordova Project Wrapper
       run: |
-        # بلڈ فولڈر کو باہر بنانا تاکہ کاپی کا ایرر نہ آئے
-        cd ..
-        cordova create app_build com.darseislami.darsenazami "Dars_E_Islami"
-        cd app_build
+        # گٹ ہب ریپوزٹری کے اندر ہی بغیر فولڈر ٹکرائے پروجیکٹ بنانا
+        cordova create app_wrapper com.darseislami.darsenazami "Dars_E_Islami"
         
-        # اصل کوڈ کو صحیح جگہ منتقل کرنا
-        rm -rf www/*
-        cp -r ../github-action-build-wrapper/* www/ || cp -r ../${{ github.event.repository.name }}/* www/ || true
+        # آپ کی انڈیکس اور دیگر فائلوں کو اس کے اندر لانا
+        cp -r index.html css js img www/ 2>/dev/null || true
+        cp -r * app_wrapper/www/ 2>/dev/null || true
         
-        # فالتو فولڈرز صاف کرنا
-        rm -rf www/.github www/app_build
+        cd app_wrapper
+        # فالتو فولڈر صاف کرنا تاکہ لوپ نہ بنے
+        rm -rf www/.github www/app_wrapper
         
-        # اینڈرائیڈ پلیٹ فارم جوڑنا
+        # اینڈرائیڈ پلیٹ فارم اور ایڈموب پلگ ان (ان کی اپنی سپیلنگ کے ساتھ)
         cordova platform add android@13.0.0
-        
-        # ایڈموب پلگ ان (ان کی اپنی مخصوص سپیلنگ APPLICATOIN کے ساتھ)
         cordova plugin add cordova-plugin-admob-suite --variable ADMOB_APPLICATOIN_ID="ca-app-pub-3940256099942544~3347511713"
 
     - name: Build Android App Bundle (AAB)
       run: |
-        cd ../app_build
+        cd app_wrapper
         cordova build android --release -- --packageType=bundle
 
     - name: Upload Finished AAB File
       uses: actions/upload-artifact@v4
       with:
         name: Islamic-Library-AAB
-        path: ../app_build/platforms/android/app/build/outputs/bundle/release/*.aab
+        path: app_wrapper/platforms/android/app/build/outputs/bundle/release/*.aab
         
