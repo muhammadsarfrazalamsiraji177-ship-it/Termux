@@ -30,24 +30,28 @@ jobs:
         
     - name: Create Cordova Project
       run: |
-        # بالکل نیا صاف ستھرا پروجیکٹ بنانا
-        cordova create cordova_project com.darseislami.darsenazami "Dars_E_Islami"
+        # پروجیکٹ بنانا
+        cordova create cordova_project com.darseislami.darsenazami "Darse_Islami"
         
-        # آپ کی انڈیکس فائل کو کاپی کرنا
+        # صرف انڈیکس فائل کو محفوظ طریقے سے لانا
         cp index.html cordova_project/www/ 2>/dev/null || true
         
         cd cordova_project
         
-        # اینڈرائیڈ کا سب سے جدید ورژن جوڑنا جو نئے گریڈل کے ساتھ کام کرتا ہے
-        cordova platform add android@13.0.0
+        # کسی بھی پرانے پلگ ان کے کچرے کو زبردستی صاف کرنا
+        cordova plugin remove cordova-plugin-admob-suite --force 2>/dev/null || true
+        cordova plugin remove cordova-plugin-admob --force 2>/dev/null || true
+        cordova plugin remove com.rjfun.cordova.admob --force 2>/dev/null || true
         
-        # نیا ایڈموب پلس پلگ ان جوڑنا
+        # اینڈرائیڈ کا مستحکم ورژن جوڑنا
+        cordova platform add android@12.0.0
+        
+        # صرف نیا اور آفیشل ایڈموب پلگ ان انسٹال کرنا
         cordova plugin add cordova-plugin-admob-plus --variable APP_ID_ANDROID="ca-app-pub-3940256099942544~3347511713"
 
     - name: Build Android App Bundle (AAB)
       run: |
         cd cordova_project
-        # فائنل ریلایز بلڈ کمانڈ
         cordova build android --release -- --packageType=bundle
 
     - name: Upload Finished AAB File
