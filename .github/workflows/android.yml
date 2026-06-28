@@ -1,0 +1,57 @@
+name: Build Android AAB (App Bundle)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '21'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Cordova
+      run: |
+        npm install -g cordova
+        
+    - name: Create Cordova Project
+      run: |
+        # ٹکراؤ سے بچنے کے لیے بلڈ فولڈر کو الگ نام سے بنانا
+        cordova create cordova_project com.darseislami.darsenazami "Dars_E_Islami"
+        
+        # صرف انڈیکس فائل کو محفوظ طریقے سے کاپی کرنا
+        cp index.html cordova_project/www/ 2>/dev/null || true
+        
+        cd cordova_project
+        
+        # اینڈرائیڈ پلیٹ فارم جوڑنا
+        cordova platform add android@13.0.0
+        
+        # ایڈموب پلگ ان (کلاؤڈ کی ڈیمانڈ کے مطابق غلط سپیلنگ APPLICATOIN کے ساتھ)
+        cordova plugin add cordova-plugin-admob-suite --variable ADMOB_APPLICATOIN_ID="ca-app-pub-3940256099942544~3347511713"
+
+    - name: Build Android App Bundle (AAB)
+      run: |
+        cd cordova_project
+        cordova build android --release -- --packageType=bundle
+
+    - name: Upload Finished AAB File
+      uses: actions/upload-artifact@v4
+      with:
+        name: Islamic-Library-AAB
+        path: cordova_project/platforms/android/app/build/outputs/bundle/release/*.aab
+        
