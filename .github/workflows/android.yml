@@ -13,11 +13,11 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 21
+    - name: Set up JDK 17  # نئے پلگ انز کے لیے زیادہ مستحکم ہے
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '21'
+        java-version: '17'
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -30,19 +30,19 @@ jobs:
         
     - name: Create Cordova Project
       run: |
-        # ٹکراؤ سے بچنے کے لیے بلڈ فولڈر کو الگ نام سے بنانا
+        # پروجیکٹ بنانا
         cordova create cordova_project com.darseislami.darsenazami "Dars_E_Islami"
         
-        # صرف انڈیکس فائل کو محفوظ طریقے سے کاپی کرنا
+        # آپ کی انڈیکس فائل کو کاپی کرنا
         cp index.html cordova_project/www/ 2>/dev/null || true
         
         cd cordova_project
         
-        # اینڈرائیڈ پلیٹ فارم جوڑنا
-        cordova platform add android@13.0.0
+        # اینڈرائیڈ کا نیا اسٹیبل پلیٹ فارم جوڑنا
+        cordova platform add android@12.0.0
         
-        # ایڈموب پلگ ان (کلاؤڈ کی ڈیمانڈ کے مطابق غلط سپیلنگ APPLICATOIN کے ساتھ)
-        cordova plugin add cordova-plugin-admob-suite --variable ADMOB_APPLICATOIN_ID="ca-app-pub-3940256099942544~3347511713"
+        # جدید اور اپڈیٹڈ ایڈموب پلگ ان (اس میں سپیلنگ کا کوئی مسئلہ نہیں ہے)
+        cordova plugin add cordova-plugin-admob-plus --variable APP_ID_ANDROID="ca-app-pub-3940256099942544~3347511713"
 
     - name: Build Android App Bundle (AAB)
       run: |
