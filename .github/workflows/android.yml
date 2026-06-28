@@ -30,22 +30,18 @@ jobs:
         
     - name: Create Cordova Project Wrapper
       run: |
-        # پلے کنسول کے مطابق پیکیج آئی ڈی اور نام سیٹ کر دیا ہے
         cordova create app_build com.darseislami.darsenazami "Dars_E_Islami"
         cd app_build
-        # آپ کی فائلیں کورڈووا کے فولڈر میں کاپی کرنا
         rm -rf www/*
         cp -r ../* www/ || true
-        # دوبارہ ڈاٹ گٹ فولڈرز صاف کرنا تاکہ ایرر نہ آئے
         rm -rf www/.github www/app_build
-        # اینڈرائیڈ پلیٹ فارم اور ایڈموب پلگ ان جوڑنا
         cordova platform add android@13.0.0
-        cordova plugin add cordova-plugin-admob-suite --variable ADMOB_APP_ID="ca-app-pub-3940256099942544~3347511713"
+        # یہاں سپیلنگ بالکل درست کر دی گئی ہے تاکہ ایرر ختم ہو جائے
+        cordova plugin add cordova-plugin-admob-suite --variable ADMOB_APPLICATION_ID="ca-app-pub-3940256099942544~3347511713"
 
     - name: Build Android App Bundle (AAB)
       run: |
         cd app_build
-        # پلے اسٹور کے لیے فائنل AAB بنڈل تیار کرنے کی کمانڈ
         cordova build android --release -- --packageType=bundle
 
     - name: Upload Finished AAB File
